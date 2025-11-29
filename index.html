@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H2K CHEATS - Secure Login Portal</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    
+    <style>
+        :root {
+            --green: #22c55e;
+            --green-light: #8ef6b4;
+            --green-dark: #059669;
+            --red: #dc2626; /* উজ্জ্বল লাল */
+            --red-dark: #b91c1c; /* গাঢ় লাল */
+        }
+        body, html {
+            margin: 0; padding: 0; min-height: 10vh;
+            background: radial-gradient(1200px 600px at 10% 10%, rgba(16,185,129,0.08), transparent),
+                        linear-gradient(180deg, #062018 0%, #071218 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        canvas#neuro {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; opacity: 0.3; z-index: 0;
+        }
+        .content { 
+            position: relative; 
+            z-index: 1; 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+        }
+
+        /* --- New CSS for Blur/Locking Effect --- */
+        .content-locked > *:not(.modal, #lockdown-overlay) { /* Modal and new overlay should not be blurred */
+            filter: blur(8px) brightness(0.7); 
+            pointer-events: none; 
+            user-select: none;
+            transition: filter 0.5s ease;
+        }
+        
+        .content:not(.content-locked) > * {
+            filter: none;
+            pointer-events: auto;
+            user-select: auto;
+        }
+
+        /* Navbar Style */
+        .navbar {
+            background: linear-gradient(90deg, rgba(4,20,14,0.55), rgba(6,32,22,0.5));
+            border-bottom: 1px solid rgba(34,197,94,0.08);
+            backdrop-filter: blur(6px);
+            padding: 0.5rem 1rem !important;
+        }
+        
+        /* --- NEW: Navbar Brand Animation Style --- */
+        .navbar-brand { 
+            color: #b7ffd8 !important; 
+            font-weight: 700; 
+            letter-spacing: 1px; 
+            font-size: 1.5rem !important; 
+            text-shadow: 0 0 5px rgba(183, 255, 216, 0.5); /* প্রাথমিক হালকা শ্যাডো */
+            animation: glow-flicker 4s infinite alternate; /* অ্যানিমেশন প্রয়োগ */
+        }
+        
+        /* NEW: Glow Flicker Keyframes */
+        @keyframes glow-flicker {
+            0% {
+                text-shadow: 0 0 5px rgba(183, 255, 216, 0.5), 0 0 10px rgba(183, 255, 216, 0.2);
+            }
+            50% {
+                text-shadow: 0 0 10px var(--green-light), 0 0 20px var(--green), 0 0 30px rgba(34, 197, 94, 0.4);
+            }
+            100% {
+                text-shadow: 0 0 5px rgba(183, 255, 216, 0.5), 0 0 15px rgba(183, 255, 216, 0.3);
+            }
+        }
+        /* --- END: Navbar Brand Animation Style --- */
+        
+        .nav-link { color: rgba(183,255,216,0.85) !important; padding: 0.5rem 1rem !important; font-weight: 500; }
+        .nav-link:hover, .nav-link.active { color: #e6fff0 !important; }
+
+        /* Navbar Buttons */
+        .nav-btns .btn { min-width: 110px; padding: 0.55rem 1.1rem !important; font-size: 0.9rem !important; font-weight: 700; border-radius: 8px !important; transition: all 0.3s ease; }
+        .nav-btns .btn-outline-light { border: 1.5px solid rgba(255,255,255,0.3); color: #fff !important; }
+        .nav-btns .btn-outline-light:hover { background: rgba(255,255,255,0.1); border-color: var(--green); color: var(--green) !important; }
+        .nav-btns .btn-success { background: linear-gradient(135deg, #16a34a, #059669) !important; border: none !important; color: #fff !important; }
+        .nav-btns .btn-success:hover { background: linear-gradient(135deg, #059669, #047857) !important; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(5,150,105,0.3) !important; }
+
+        /* লাল বাটনগুলির স্টাইল */
+        .nav-btns .btn-danger-custom { 
+            background: var(--red) !important; /* সম্পূর্ণ লাল */
+            border: none !important; 
+            color: #fff !important; 
+            box-shadow: none !important; 
+        }
+        .nav-btns .btn-danger-custom:hover { 
+            background: var(--red-dark) !important; /* হোভারে গাঢ় লাল */
+            transform: none !important; 
+            box-shadow: none !important; 
+        }
+
+        /* Hero Section & Other content styles */
+        .hero { flex: 1; display: flex; align-items: center; justify-content: center; text-align: center; padding: 4rem 2rem; }
+        .hero-title { 
+            font-size: 3.8rem; 
+            font-weight: 800; 
+            background: linear-gradient(135deg, var(--green-light), var(--green)); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            background-clip: text; 
+            letter-spacing: 2px; 
+            margin-bottom: 1rem;
+            position: relative; /* অ্যানিমেশন কার্সরের জন্য প্রয়োজন */
+        }
+        
+        /* নতুন: টাইপিং কার্সর অ্যানিমেশন */
+        .hero-title::after {
+            content: ''; /* কার্সর ক্যারেক্টার */
+            color: var(--green-light); /* কার্সরের রং */
+            animation: blink-caret 0.75s step-end infinite;
+            font-weight: 400; 
+            margin-left: 5px;
+            /* নিশ্চিত করুন কার্সর gradient text এর উপর দৃশ্যমান হয় */
+            -webkit-text-fill-color: var(--green-light); 
+            background-clip: unset; 
+            -webkit-background-clip: unset;
+        }
+
+        @keyframes blink-caret {
+            from, to { visibility: hidden; }
+            50% { visibility: visible; }
+        }
+        
+        .hero-subtitle { font-size: 1.4rem; color: var(--green); font-weight: 500; margin-bottom: 1rem; }
+        .hero-lead { color: rgba(200, 245, 220, 0.9); font-size: 1.15rem; max-width: 720px; margin: 0 auto 2rem; }
+
+        /* Tool Cards Section Styling (unchanged) */
+        .tool-card { 
+            background: rgba(16,185,129,0.05); 
+            border-radius: 20px; 
+            padding: 2.5rem 2rem; 
+            height: 100%; 
+            transition: all 0.3s ease; 
+            backdrop-filter: blur(10px); 
+        }
+        .tool-card-green { border: 1px solid rgba(34,197,94,0.2); }
+        .tool-card-green:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(8,120,75,0.25); }
+        .tool-card-red { border: 1px solid rgba(220, 38, 38, 0.2); }
+        .tool-card-red:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(220, 38, 38, 0.25); }
+
+        .tool-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .text-green { color: var(--green) !important; }
+        .text-red { color: var(--red) !important; }
+        .card-header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+        .version-tag { font-size: 0.9rem; font-weight: 700; padding: 0.3rem 0.7rem; border-radius: 6px; }
+        .version-green { background-color: var(--green-dark); color: #fff; }
+        .version-red { background-color: var(--red-dark); color: #fff; }
+
+        .btn-card { font-size: 0.95rem; font-weight: 700; border-radius: 6px; padding: 0.6rem 1.5rem; transition: all 0.3s ease; border: none; }
+        .btn-card-green { background: var(--green); color: #000; }
+        .btn-card-green:hover { background: var(--green-light) !important; color: #000; transform: translateY(-1px); box-shadow: 0 4px 15px rgba(34,197,94,0.4); }
+        .btn-card-red { background: var(--red); color: #fff; box-shadow: none; }
+        .btn-card-red:hover { background: var(--red-dark); color: #fff; transform: none; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4); }
+        
+        /* --- About Section Specific Styles (unchanged) --- */
+        .about-section { padding: 4rem 1rem; }
+        .about-card { background: rgba(16,185,129,0.05); border: 1px solid rgba(34,197,94,0.2); border-radius: 20px; padding: 3rem 2rem; backdrop-filter: blur(10px); }
+        .about-heading { font-size: 2.0rem; font-weight: 700; color: var(--green-light); margin-bottom: 2rem; }
+        .about-text { color: rgba(255, 255, 255, 0.85); font-size: 1.1rem; line-height: 1.8; margin-bottom: 1.5rem; }
+        .about-feature { background: rgba(34,197,94,0.1); padding: 1rem; border-radius: 10px; margin-bottom: 1rem; display: flex; align-items: center; }
+        .about-feature i { font-size: 1.5rem; color: var(--green); margin-right: 15px; }
+
+
+        /* Footer (unchanged) */
+        footer { background: linear-gradient(180deg, rgba(3,18,12,0.35), rgba(6,22,18,0.45)); border-top: 1px solid rgba(34,197,94,0.2); padding: 2.5rem 1rem; text-align: center; color: rgba(190,230,210,0.9); margin-top: auto; }
+        
+        /* --- Login Modal Custom Styles (unchanged) --- */
+        .modal-dialog.modal-w-responsive { width: 100%; margin: 1.75rem auto; }
+        @media (min-width: 992px) { .modal-dialog.modal-w-responsive { max-width: 450px !important; } }
+        @media (min-width: 768px) and (max-width: 991px) { .modal-dialog.modal-w-responsive { max-width: 60vw !important; } }
+        @media (max-width: 767px) { .modal-dialog.modal-w-responsive { max-width: 90vw !important; } }
+
+        .login-links a { 
+            color: rgba(183,255,216,0.7); 
+            font-size: 0.9rem; 
+            transition: color 0.2s ease, text-shadow 0.3s ease, transform 0.3s ease;
+            text-decoration: none; 
+            display: inline-block;
+        }
+        .login-links a:hover { 
+            color: var(--green-light); 
+            text-decoration: underline; 
+            text-shadow: 0 0 8px rgba(142, 246, 180, 0.7); 
+            transform: scale(1.05);
+        }
+        .social-icons-login { margin-top: 1.5rem; }
+        .social-icons-login a { font-size: 1.8rem; color: #fff; transition: color 0.3s ease, transform 0.3s ease; margin: 0 10px; }
+        .social-icons-login a:hover { color: var(--green); transform: scale(1.1); }
+        .social-icons-login .fa-discord { color: #5865F2; } 
+        .social-icons-login .fa-youtube { color: #FF0000; }
+        .social-icons-login .fa-facebook { color: #1877F2; } 
+        
+        /* কাস্টম চেকবক্স স্টাইল (unchanged) */
+        .custom-checkbox input[type="checkbox"] { opacity: 0; width: 0; height: 0; }
+        .custom-checkbox label { position: relative; padding-left: 25px; cursor: pointer; color: rgba(255, 255, 255, 0.75); user-select: none; font-size: 0.95rem; }
+        .custom-checkbox label::before { content: ''; position: absolute; left: 0; top: 2px; width: 16px; height: 16px; border: 1px solid var(--green); background-color: #062018; border-radius: 4px; transition: background-color 0.2s, border-color 0.2s; }
+        .custom-checkbox label::after { content: '\f00c'; font-family: 'Font Awesome 5 Free'; font-weight: 900; position: absolute; top: 2px; left: 3px; font-size: 12px; color: #062018; opacity: 0; transition: opacity 0.2s; }
+        .custom-checkbox input[type="checkbox"]:checked + label::before { background-color: var(--green); border-color: var(--green); }
+        .custom-checkbox input[type="checkbox"]:checked + label::after { opacity: 1; }
+
+        /* --- Login Button Custom Animation (unchanged) --- */
+        .btn-login-h2k {
+            position: relative;
+            overflow: hidden; /* Shine effect কে বাটনের বাইরে যেতে দেবে না */
+            /* প্রাথমিক মসৃণ পরিবর্তন */
+            transition: all 0.3s ease-in-out, box-shadow 0.5s;
+            /* প্রাথমিক গ্লো: সামান্য সবুজ শ্যাডো */
+            box-shadow: 0 0 8px rgba(34, 197, 94, 0.3); 
+            border-radius: 6px !important;
+        }
+
+        /* মাউস হোভারের সময়: উজ্জ্বল গ্লো এবং সামান্য বড় হওয়া */
+        .btn-login-h2k:hover {
+            transform: scale(1.02); 
+            /* তীব্র গ্লো ইফেক্ট */
+            box-shadow: 0 0 15px var(--green), 0 0 30px var(--green-light), 0 0 45px rgba(34, 197, 94, 0.6); 
+        }
+
+        /* সাইড-সোয়াইপ ইফেক্টের জন্য Pseudo-element */
+        .btn-login-h2k::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%; /* শুরু হবে বাম দিক থেকে */
+            width: 30%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2); /* আলোর রঙ: আধা-স্বচ্ছ সাদা */
+            transform: skewX(-20deg); /* তির্যক আকৃতি */
+            opacity: 0;
+        }
+
+        /* মাউস হোভারের সময় সোয়াইপ অ্যানিমেশন সক্রিয় হবে */
+        .btn-login-h2k:hover::after {
+            opacity: 1;
+            animation: swipe-shine 1s linear infinite; /* 1 সেকেন্ডে লুপ হবে */
+        }
+
+        /* Keyframe: আলোর ঝলক বাম থেকে ডানে যাবে */
+        @keyframes swipe-shine {
+            0% { left: -100%; }
+            100% { left: 150%; }
+        }
+        
+        /* --- NEW: Lockdown Overlay Style --- */
+        #lockdown-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            z-index: 9999; /* নিশ্চিত করে যেন সবকিছুর উপরে থাকে */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        #lockdown-overlay.active {
+            opacity: 1;
+        }
+        .lockdown-content {
+            padding: 3rem;
+            border: 3px solid var(--red-dark);
+            border-radius: 15px;
+            background: rgba(30, 0, 0, 0.8);
+            box-shadow: 0 0 30px rgba(220, 38, 38, 0.5);
+        }
+        .lockdown-content i {
+            font-size: 4rem;
+            color: var(--red);
+            margin-bottom: 1rem;
+            animation: pulse-red 1.5s infinite alternate;
+        }
+
+        @keyframes pulse-red {
+            from { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); }
+            to { box-shadow: 0 0 0 20px rgba(220, 38, 38, 0); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Canvas Placeholder for Neuro-Glow Effect -->
+    <canvas id="neuro"></canvas>
+
+    <!-- Content Wrapper: লগইন না হওয়া পর্যন্ত এই ডিভটিতে 'content-locked' ক্লাসটি যোগ করা হবে -->
+    <div class="content content-locked" id="mainContent">
+        <!-- Navbar: H2K CHEATS-এ অ্যানিমেশন যুক্ত হয়েছে -->
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">H2K CHEATS</a>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="#home">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#tools">Software</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#about">About Us</a></li> 
+                    </ul>
+                    <div class="d-flex gap-3 nav-btns" id="authButtonsContainer">
+                        <!-- Buttons will be rendered by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section, Tool Cards Section, About Section, Footer (updated content) -->
+        <header class="hero" id="home">
+            <div class="container">
+                <!-- টাইপিং অ্যানিমেশন এর জন্য নতুন পরিবর্তন -->
+                <h1 class="hero-title">
+                    <span id="typedText"></span> <!-- এখানে টাইপিং ইফেক্ট যুক্ত হবে -->
+                </h1>
+                <h2 class="hero-subtitle">The Next Level in Gaming Advantage</h2>
+                <p class="hero-lead">Access cutting-edge memory manipulation and runtime injection techniques for a competitive edge, delivering unparalleled performance and precision in your favorite titles.</p>
+                <div class="d-flex justify-content-center gap-4">
+                    <a href="#tools" class="btn btn-success btn-lg" style="min-width: 200px;">Explore Software</a>
+                    <a href="https://discord.gg/jnY6r7vntK" target="_blank" class="btn btn-outline-light btn-lg" style="min-width: 200px;">Discord Support</a>
+                </div>
+            </div>
+        </header>
+
+        <section class="container py-5" id="tools">
+            <h2 class="text-center mb-5" style="font-size: 2.5rem; font-weight: 700; color: var(--green-light);">Our Featured Software</h2>
+            <div class="row g-4">
+                <!-- 1. Get Aimbot Access -->
+                <div class="col-sm-6 col-lg-4">
+                    <div class="tool-card tool-card-green">
+                        <div class="card-header-flex">
+                            <div class="tool-icon text-green"><i class="fas fa-crosshairs"></i></div>
+                            <span class="version-tag version-green">v 4.3.0</span>
+                        </div>
+                        <h3 class="fs-4 fw-bold mb-2 text-green">H2K Cheats Loader Feature</h3>
+                        <p class="text-secondary" style="height: 4.5rem;">Achieve perfect target acquisition with our advanced trajectory correction and smooth, humanized aiming algorithms for unnoticeable performance.</p>
+                        <!-- UPDATED LINK -->
+                        <a href="https://github.com/hasibplayz/H2K-CHEATS/releases/download/H2K/H2K.LOADER.rar" target="_blank" class="btn btn-card btn-card-green w-100 mt-3">Get Loader Access</a>
+                    </div>
+                </div>
+                <!-- 2. Get ESP Software -->
+                <div class="col-sm-6 col-lg-4">
+                    <div class="tool-card tool-card-red">
+                        <div class="card-header-flex">
+                            <div class="tool-icon text-red"><i class="fas fa-eye"></i></div> 
+                            <span class="version-tag version-red">v 1.1.2</span>
+                        </div>
+                        <h3 class="fs-4 fw-bold mb-2 text-red">Config File And Regedit</h3>
+                        <p class="text-secondary" style="height: 4.5rem;">Gain complete situational awareness by viewing player positions, health, and valuable item locations through walls and obstacles.</p>
+                        <!-- UPDATED LINK -->
+                        <a href="https://www.youtube.com/222" target="_blank" class="btn btn-card btn-card-red w-100 mt-3">Get ESP Software</a>
+                    </div>
+                </div>
+                <!-- 3. Get Mod Loader -->
+                <div class="col-sm-6 col-lg-4">
+                    <div class="tool-card tool-card-green">
+                        <div class="card-header-flex">
+                            <div class="tool-icon text-green"><i class="fas fa-tachometer-alt"></i></div>
+                            <span class="version-tag version-green">v 2.0.1</span>
+                        </div>
+                        <h3 class="fs-4 fw-bold mb-2 text-green">Emote Bot / Hex Mod</h3>
+                        <p class="text-secondary" style="height: 4.5rem;">Eliminate weapon spread and movement restrictions, allowing for laser-accurate shooting and lightning-fast traversal across the map.</p>
+                        <!-- UPDATED LINK -->
+                        <a href="https://www.youtube.com/333" target="_blank" class="btn btn-card btn-card-green w-100 mt-3">Get Mod Loader</a>
+                    </div>
+                </div>
+                <!-- 4. Get Skin Unlocker -->
+                <div class="col-sm-6 col-lg-4">
+                    <div class="tool-card tool-card-red">
+                        <div class="card-header-flex">
+                            <div class="tool-icon text-red"><i class="fas fa-palette"></i></div>
+                            <span class="version-tag version-red">v 3.5.0</span>
+                        </div>
+                        <h3 class="fs-4 fw-bold mb-2 text-red">Premium Skin Changer & Glich File</h3>
+                        <p class="text-secondary" style="height: 4.5rem;">Customize your in-game aesthetics instantly. Access all exclusive cosmetic items without affecting gameplay for other players.</p>
+                        <!-- UPDATED LINK -->
+                        <a href="https://www.youtube.com/444" target="_blank" class="btn btn-card btn-card-red w-100 mt-3">Get Skin Unlocker</a>
+                    </div>
+                </div>
+                <!-- 5. Get Security Update (Security Update = Get Securty Update) -->
+                <div class="col-sm-6 col-lg-4">
+                    <div class="tool-card tool-card-green">
+                        <div class="card-header-flex">
+                            <div class="tool-icon text-green"><i class="fas fa-shield-alt"></i></div>
+                            <span class="version-tag version-green">v 6.0.4</span>
+                        </div>
+                        <h3 class="fs-4 fw-bold mb-2 text-green">Code Converter By H2K</h3>
+                        <p class="text-secondary" style="height: 4.5rem;">Utilize kernel level virtualization and obfuscation to defeat the latest anti-cheat systems, ensuring maximum account safety.</p>
+                        <!-- UPDATED LINK -->
+                        <a href="https://www.youtube.com/555" target="_blank" class="btn btn-card btn-card-green w-100 mt-3">Get Security Update</a>
+                    </div>
+                </div>
+                <!-- 6. Get Macro Utility -->
+                <div class="col-sm-6 col-lg-4">
+                    <div class="tool-card tool-card-red">
+                        <div class="card-header-flex">
+                            <div class="tool-icon text-red"><i class="fas fa-keyboard"></i></div>
+                            <span class="version-tag version-red">v 1.0.0</span>
+                        </div>
+                        <h3 class="fs-4 fw-bold mb-2 text-red">Dedicated Macro Keybinder</h3>
+                        <p class="text-secondary" style="height: 4.5rem;">Automate complex sequences and actions with millisecond precision, giving you the edge in crafting and repetitive tasks.</p>
+                        <!-- UPDATED LINK -->
+                        <a href="https://www.youtube.com/666" target="_blank" class="btn btn-card btn-card-red w-100 mt-3">Get Macro Utility</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="container about-section" id="about">
+            <h2 class="text-center mb-5" style="font-size: 2.5rem; font-weight: 700; color: var(--green-light);">About Us</h2>
+            
+            <div class="about-card">
+                <h2 class="about-heading text-center">H2K CHEATS</h2>
+                <div class="row">
+                    <div class="col-lg-6 mb-4">
+                        <p class="about-text">
+                            H2K CHEATS is not just a tool provider; we are the gaming ecosystem where performance and security go hand in hand. Our goal is to provide you with an advantage through cutting-edge technology that is impossible for any other ordinary player to achieve. We work on the future of gaming.
+                        </p>
+                        <p class="about-text">
+                            We know how important security is, so each of our software is designed with kernel-level protection, which helps your account evade the latest anti-cheat systems.
+                        </p>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="about-feature">
+                            <i class="fas fa-microchip"></i>
+                            <span class="fw-bold">Modern Technology-</span> New Memory And Technology.
+                        </div>
+                        <div class="about-feature">
+                            <i class="fas fa-user-shield"></i>
+                            <span class="fw-bold">Maximum Security-</span> Anti-Ban Bypass Cores Highest On Security System.
+                        </div>
+                        <div class="about-feature">
+                            <i class="fas fa-headset"></i>
+                            <span class="fw-bold">24/7 Support-</span> 24/7 Help On Discord Server.
+                        </div>
+                        <p class="about-text mt-4">
+                            Be part of our community and unleash your true potential in gaming. At H2K, we ensure that your gaming experience will be unlike any other—filled with speed, precision, and unstoppable power.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <footer>
+            <p>&copy; 2024 H2K CHEATS. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <!-- NEW: Lockdown Overlay -->
+    <div id="lockdown-overlay" class="d-none">
+        <div class="lockdown-content">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h1 class="text-danger fw-bold fs-1">SYSTEM INTEGRITY COMPROMISED</h1>
+            <h2 class="text-danger fs-4 fw-normal mb-4">ACCESS DENIED. Tampering detected.</h2>
+            <p class="text-white-50">For security and integrity reasons, all access has been terminated.</p>
+        </div>
+    </div>
+
+
+    <!-- Login Modal: লগইন করার জন্য পপ-আপ -->
+    <div class="modal fade" id="loginModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-w-responsive"> 
+            <div class="modal-content" style="background-color: #071218; border: 1px solid var(--green-dark); border-radius: 20px;">
+                <div class="modal-header border-0 d-block text-center" style="padding-bottom: 0;">
+                    <h5 class="modal-title" id="loginModalLabel" style="color: var(--green-light); font-weight: 700;">H2K CHEATS LOGIN</h5>
+                </div>
+                <div class="modal-body pt-2">
+                    <form id="loginForm" method="POST"> 
+                        <div class="mb-3">
+                            <label for="loginEmail" class="form-label text-white-75">Email</label>
+                            <input type="email" class="form-control" id="loginEmail" 
+                                style="background-color: #062018; border-color: rgba(34,197,94,0.3); color: #fff;"
+                                autocomplete="username">
+                        </div>
+                        <div class="mb-3">
+                            <label for="loginPassword" class="form-label text-white-75">Password</label>
+                            <input type="password" class="form-control" id="loginPassword" 
+                                style="background-color: #062018; border-color: rgba(34,197,94,0.3); color: #fff;"
+                                autocomplete="current-password">
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="custom-checkbox">
+                                <input type="checkbox" id="rememberMe" checked>
+                                <label for="rememberMe">Remember Me</label>
+                            </div>
+                            
+                            <div class="login-links">
+                                <a href="https://discord.gg/jnY6r7vntK" target="_blank">Forgot Password?</a>
+                            </div>
+                        </div>
+                        
+                        <!-- UPDATED: Added new class 'btn-login-h2k' for animation -->
+                        <button type="submit" class="btn btn-success w-100 mt-3 btn-login-h2k">
+                            Login to H2K
+                        </button>
+                    </form>
+
+                    <div class="login-links text-center mt-3">
+                        <a href="https://discord.gg/jnY6r7vntK" target="_blank">Need Support? Contact Us</a>
+                    </div>
+
+                    <div class="social-icons-login d-flex flex-column align-items-center">
+                        <div class="d-flex justify-content-center gap-4">
+                            <a href="https://discord.gg/jnY6r7vntK" target="_blank" title="Join Discord"><i class="fab fa-discord"></i></a>
+                            <a href="https://www.youtube.com/@h2k_cheats" target="_blank" title="H2K YouTube Channel"><i class="fab fa-youtube"></i></a>
+                            <a href="https://www.facebook.com/profile.php?id=61581826692810" target="_blank" title="Facebook Page"><i class="fab fa-facebook"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div aria-live="polite" aria-atomic="true" class="position-relative">
+        <div id="toastContainer" class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1056;">
+            <!-- Toast elements will be injected here -->
+        </div>
+    </div>
+
+
+    <!-- Required Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Firebase SDK Modules (type="module" is essential) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword, 
+            signOut, 
+            onAuthStateChanged,
+            setPersistence,
+            browserSessionPersistence,
+            browserLocalPersistence
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        // ফায়ারবেস কনফিগারেশন
+        const firebaseConfig = {
+            apiKey: "AIzaSyB3MkGe9-zkR7KEzMyGSuS3w1iWFa_LcUI",
+            authDomain: "emote-by-h2k.firebaseapp.com",
+            projectId: "emote-by-h2k",
+            storageBucket: "emote-by-h2k.firebasestorage.app",
+            messagingSenderId: "296070997318",
+            appId: "1:296070997318:web:9a796460cc2db676f03147",
+            measurementId: "G-1YGPBQ8Y18"
+        };
+        
+        const REMEMBER_ME_KEY = 'h2k_last_email';
+        const DISCORD_LINK = 'https://discord.gg/jnY6r7vntK'; // 100 বার খোলার জন্য লিঙ্ক
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        
+        const mainContent = document.getElementById('mainContent');
+        const authButtonsContainer = document.getElementById('authButtonsContainer');
+        const loginModalElement = document.getElementById('loginModal');
+        const loginModal = new bootstrap.Modal(loginModalElement);
+        const loginForm = document.getElementById('loginForm');
+        const loginEmailInput = document.getElementById('loginEmail');
+        const rememberMeCheckbox = document.getElementById('rememberMe');
+        const toastContainer = document.getElementById('toastContainer');
+        const lockdownOverlay = document.getElementById('lockdown-overlay');
+        
+        let initialAuthCheckComplete = false;
+        let crackDetectionInterval = null; // নতুন: অ্যান্টি-ক্র্যাকার ইন্টারভাল
+
+        // ফাংশন: টোস্ট দেখানো (Function: Show Toast Notification)
+        function showToast(message, type) {
+            let bgClass = '';
+            let icon = '';
+            
+            if (type === 'success') {
+                bgClass = 'bg-success text-white';
+                icon = '<i class="fas fa-check-circle me-2"></i>';
+            } else if (type === 'error') {
+                bgClass = 'bg-danger text-white';
+                icon = '<i class="fas fa-times-circle me-2"></i>';
+            } else if (type === 'warning') {
+                bgClass = 'bg-warning text-dark'; 
+                icon = '<i class="fas fa-exclamation-triangle me-2"></i>';
+            }
+            else {
+                bgClass = 'bg-info text-white';
+                icon = '<i class="fas fa-info-circle me-2"></i>';
+            }
+
+            const toastHtml = `
+                <div class="toast align-items-center ${bgClass} border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000">
+                    <div class="d-flex">
+                        <div class="toast-body d-flex align-items-center" style="font-weight: 500;">
+                            ${icon} ${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            `;
+            
+            toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+            
+            const toastEl = toastContainer.lastElementChild;
+            const toast = new bootstrap.Toast(toastEl);
+            toast.show();
+            
+            toastEl.addEventListener('hidden.bs.toast', () => {
+                toastEl.remove();
+            });
+        }
+        
+        // --- নতুন: অ্যান্টি-ক্র্যাকার লজিক ---
+
+        /**
+         * যদি DevTools সনাক্ত হয়, তাহলে পুরো UI লক করে দেয়, ১০০টি পপ-আপ খোলে এবং একটি লাল সতর্কবার্তা দেখায়।
+         */
+        function showLockdownScreen() {
+            // যদি এটি ইতিমধ্যে সক্রিয় থাকে, তবে আর কিছু করার দরকার নেই।
+            if (lockdownOverlay.classList.contains('active')) {
+                return;
+            }
+
+            console.error("CRITICAL: DevTools/Tampering activity detected. Initiating System Lockdown.");
+            
+            // --- নতুন: ১০০টি পপ-আপ খোলার চেষ্টা করা ---
+            console.warn("Attempting to launch 100 new Discord windows as countermeasure.");
+            for (let i = 0; i < 100; i++) {
+                // পপ-আপ ব্লকার এড়াতে _blank ব্যবহার করা হচ্ছে। ব্রাউজারগুলি বেশিরভাগই ব্লক করবে।
+                window.open(DISCORD_LINK, '_blank'); 
+            }
+            // --- নতুন কাউন্টারমেজার শেষ ---
+
+            // ১. ডিবাগিং লুপ বন্ধ করা
+            if (crackDetectionInterval) {
+                clearInterval(crackDetectionInterval);
+                crackDetectionInterval = null;
+            }
+
+            // ২. ব্যবহারকারীকে লগআউট করার চেষ্টা করা
+            if (auth && auth.currentUser) {
+                signOut(auth).catch(e => console.error("Sign out failed on lockdown:", e));
+            }
+            
+            // ৩. মূল কন্টেন্টকে দৃশ্যত অক্ষম করা (যদি ব্লার কাজ না করে)
+            mainContent.classList.add('content-locked');
+            
+            // ৪. ফুল-স্ক্রিন লকডাউন ওভারলে সক্রিয় করা
+            lockdownOverlay.classList.remove('d-none');
+            // ট্রানজিশনের জন্য একটি ছোট বিলম্ব
+            setTimeout(() => {
+                lockdownOverlay.classList.add('active');
+            }, 50);
+
+            // ৫. সমস্ত ইনপুট বন্ধ করা (অতিরিক্ত সুরক্ষা)
+            document.body.style.pointerEvents = 'none';
+        }
+
+
+        /**
+         * DevTools খোলার সময়-ভিত্তিক সনাক্তকরণের লজিক শুরু করে।
+         */
+        function startCrackDetection() {
+            if (crackDetectionInterval) {
+                // এটি ইতিমধ্যে চলছে, তাই আবার শুরু করার দরকার নেই
+                return;
+            }
+
+            // সাধারণত 100ms এর বেশি হলে ধরে নেওয়া হয় যে এটি DevTools-এPaused ছিল।
+            const timeThreshold = 100; 
+
+            function checkDevTools() {
+                // একটি পরিচিত অ্যান্টি-ডিবাগিং কৌশল:
+                // debugger স্টেটমেন্টে আঘাত করার পরে সময় পরিমাপ করা।
+                // যদি DevTools খোলা থাকে, তাহলে এটি পজ হয়ে যায় এবং সময় দীর্ঘ হয়।
+                const start = Date.now();
+                // eslint-disable-next-line no-debugger
+                debugger;
+                const end = Date.now();
+                
+                if (end - start > timeThreshold) {
+                    showLockdownScreen();
+                }
+            }
+
+            // ক্রমাগত চেক চালাতে setInterval ব্যবহার করা (প্রতি 1 সেকেন্ডে)
+            crackDetectionInterval = setInterval(checkDevTools, 1000); 
+            console.log("Anti-Cracker Protection Initialized.");
+        }
+        
+        /**
+         * লগইন সফল হলে ক্র্যাকার সনাক্তকরণ বন্ধ করে দেয়
+         */
+        function stopCrackDetection() {
+             if (crackDetectionInterval) {
+                clearInterval(crackDetectionInterval);
+                crackDetectionInterval = null;
+                console.log("Anti-Cracker Protection Paused (User Authenticated).");
+            }
+        }
+        
+        // --- অ্যান্টি-ক্র্যাকার লজিক শেষ ---
+
+
+        // ফাংশন: লগআউট হ্যান্ডেল করা (Function: Handle Logout)
+        async function handleLogout() {
+            try {
+                stopCrackDetection(); // লগআউটের আগে ডিটেকশন বন্ধ করা
+                await signOut(auth);
+                await setPersistence(auth, browserSessionPersistence);
+                showToast('সফলভাবে লগআউট করা হয়েছে।', 'info');
+                // লগআউটের পরে onAuthStateChanged আবার ডিটেকশন শুরু করবে (updateAuthUI এ)
+            } catch (error) {
+                console.error("Logout Error:", error);
+                showToast('লগআউট ব্যর্থ হয়েছে।', 'error');
+            }
+        }
+        
+        // ফাংশন: প্রমাণীকরণ UI আপডেট করা
+        function updateAuthUI(user) {
+            authButtonsContainer.innerHTML = '';
+            
+            if (user) {
+                // লগইন করা থাকলে: ক্র্যাকার ডিটেকশন বন্ধ
+                stopCrackDetection();
+                
+                const userEmailDisplay = user.email.length > 20 ? user.email.substring(0, 20) + '...' : user.email;
+                authButtonsContainer.innerHTML = `
+                    <span class="text-white-50 me-2 d-none d-lg-block">Welcome, ${userEmailDisplay}</span>
+                    <button class="btn btn-danger-custom" onclick="window.handleLogout()">Logout</button>
+                    <button class="btn btn-danger-custom">Sign Up</button>
+                `;
+                mainContent.classList.remove('content-locked');
+                loginModal.hide();
+            } else {
+                // লগইন করা না থাকলে: ক্র্যাকার ডিটেকশন শুরু
+                startCrackDetection();
+                
+                 authButtonsContainer.innerHTML = `
+                    <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
+                    <button class="btn btn-danger-custom">Sign Up</button>
+                    <button class="btn btn-success">Purchase Access</button>
+                `;
+                mainContent.classList.add('content-locked');
+                
+                if (initialAuthCheckComplete) {
+                     const isModalShown = loginModalElement.classList.contains('show');
+                     if (!isModalShown) {
+                         loginModal.show();
+                     }
+                }
+            }
+        }
+        
+        // ফাংশন: স্থানীয় স্টোরেজ থেকে ইমেইল লোড করা
+        function loadRememberedEmail() {
+            const rememberedEmail = localStorage.getItem(REMEMBER_ME_KEY);
+            if (rememberedEmail) {
+                loginEmailInput.value = rememberedEmail;
+                rememberMeCheckbox.checked = true;
+            } else {
+                rememberMeCheckbox.checked = false;
+            }
+        }
+
+        // ফাংশন: লগইন হ্যান্ডেল করা (Function: Handle Login)
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            const rememberMe = document.getElementById('rememberMe').checked;
+
+            if (!email || !password) {
+                showToast('Enter Email & Password', 'warning');
+                return; 
+            }
+
+            try {
+                // ১. পারসিস্টেন্স সেট করা
+                const persistenceType = rememberMe ? browserLocalPersistence : browserSessionPersistence;
+                await setPersistence(auth, persistenceType);
+                
+                // ২. লগইন করা
+                await signInWithEmailAndPassword(auth, email, password);
+                
+                // ৩. ইমেইল সংরক্ষণ (পারসিস্টেন্স সফল হলে)
+                if (rememberMe) {
+                    localStorage.setItem(REMEMBER_ME_KEY, email);
+                } else {
+                    localStorage.removeItem(REMEMBER_ME_KEY);
+                }
+                
+                showToast('Successfully Logined', 'success');
+            } catch (error) {
+                console.error("Login Error:", error.code, error.message);
+                
+                let errorMessage = "Invalid Information";
+                
+                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                    errorMessage = "ভুল ইমেইল বা পাসওয়ার্ড। আবার চেষ্টা করুন।";
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = "অকার্যকর ইমেইল ফরম্যাট।";
+                } else if (error.code === 'auth/too-many-requests') {
+                    errorMessage = "অনেকবার ভুল চেষ্টা করা হয়েছে। কিছুক্ষণ পর আবার চেষ্টা করুন।";
+                }
+                
+                showToast(errorMessage, 'error');
+            }
+        }
+        
+        // --- টাইপিং অ্যানিমেশন লজিক (পূর্বের মতো) ---
+        const typedTextElement = document.getElementById('typedText');
+        const textToType = 'H2K CHEATS';
+        let charIndex = 0;
+        const typingSpeed = 150; 
+        const delayAfterTyping = 1500; 
+
+        function startTypingEffect() {
+            charIndex = 0;
+            typedTextElement.textContent = '';
+            typeText();
+        }
+
+        function typeText() {
+            if (charIndex < textToType.length) {
+                typedTextElement.textContent += textToType.charAt(charIndex);
+                charIndex++;
+                setTimeout(typeText, typingSpeed);
+            } else {
+                setTimeout(eraseText, delayAfterTyping);
+            }
+        }
+
+        function eraseText() {
+            if (typedTextElement.textContent.length > 0) {
+                typedTextElement.textContent = typedTextElement.textContent.substring(0, typedTextElement.textContent.length - 1);
+                setTimeout(eraseText, typingSpeed / 2); 
+            } else {
+                setTimeout(startTypingEffect, 500);
+            }
+        }
+        // --- টাইপিং অ্যানিমেশন লজিক শেষ ---
+
+
+        // প্রমাণীকরণ অবস্থার পরিবর্তন পর্যবেক্ষণ করা
+        onAuthStateChanged(auth, (user) => {
+            if (!initialAuthCheckComplete) {
+                initialAuthCheckComplete = true; 
+            }
+            updateAuthUI(user);
+        });
+
+        // ইভেন্ট লিসেনার সেট করা
+        loginForm.addEventListener('submit', handleLogin);
+
+        // গ্লোবাল স্কোপে ফাংশনগুলি যোগ করা যাতে HTML এ ব্যবহার করা যায়
+        window.handleLogout = handleLogout;
+
+
+        // ৩. Neuro-Glow Background Effect
+        const canvas = document.getElementById('neuro');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let particles = [];
+        const particleCount = 100;
+        const color = getComputedStyle(document.documentElement).getPropertyValue('--green-dark').trim();
+
+        function resizeCanvas() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; particles = []; initParticles(); }
+        class Particle {
+            constructor() { this.x = Math.random() * width; this.y = Math.random() * height; this.size = Math.random() * 2 + 0.5; this.speedX = Math.random() * 1 - 0.5; this.speedY = Math.random() * 1 - 0.5; }
+            update() { this.x += this.speedX; this.y += this.speedY; if (this.size > 0.1) this.size -= 0.01; if (this.x < 0 || this.x > width) this.speedX = -this.speedX; if (this.y < 0 || this.y > height) this.speedY = -this.speedY; if (this.size <= 0.1) { this.x = Math.random() * width; this.y = Math.random() * height; this.size = Math.random() * 2 + 0.5; this.speedX = Math.random() * 1 - 0.5; this.speedY = Math.random() * 1 - 0.5; } }
+            draw() { ctx.fillStyle = color; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
+        }
+        function initParticles() { for (let i = 0; i < particleCount; i++) { particles.push(new Particle()); } }
+        function connect() { let opacityValue = 1; for (let a = 0; a < particles.length; a++) { for (let b = a; b < particles.length; b++) { let distance = ((particles[a].x - particles[b].x) ** 2 + (particles[a].y - particles[b].y) ** 2) ** 0.5; if (distance < 100) { opacityValue = 1 - (distance / 100); ctx.strokeStyle = `rgba(34, 197, 94, ${opacityValue * 0.4})`; ctx.lineWidth = 0.5; ctx.beginPath(); ctx.moveTo(particles[a].x, particles[a].y); ctx.lineTo(particles[b].x, particles[b].y); ctx.stroke(); } } } }
+        function animate() { 
+            ctx.fillStyle = 'rgba(7, 18, 24, 0.2)'; 
+            ctx.fillRect(0, 0, width, height);
+            for (let i = 0; i < particles.length; i++) { particles[i].update(); }
+            connect();
+            for (let i = 0; i < particles.length; i++) { particles[i].draw(); }
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('load', () => {
+            loadRememberedEmail();
+            startTypingEffect(); 
+            
+            resizeCanvas();
+            animate();
+            
+            // নতুন: এখানে crack detection শুরু করা হচ্ছে, যদি user লগইন না করে থাকে।
+            if (!auth.currentUser) {
+                startCrackDetection();
+            }
+        });
+        window.addEventListener('resize', resizeCanvas);
+    </script>
+</body>
+</html>
